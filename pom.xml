@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.lost-dimension-games</groupId>
+    <artifactId>mcp_deobfuscate</artifactId>
+    <version>1.0</version>
+    <name>MCP Deobfuscate</name>
+    <repositories>
+        <repository>
+            <id>asm</id>
+            <name>ASM's repository</name>
+            <layout>default</layout>
+            <url>http://maven.ow2.org/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+    </dependencies>
+</project>
