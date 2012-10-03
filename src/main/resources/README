@@ -1,0 +1,9 @@
+MCP Deobfuscate is a general-purpose obfucation and deobfuscation tool.  It
+accepts RetroGuard-style configuration files, and can process anything from
+single class files up to multiple .jar files seamlessly, without needing any
+of the target's dependencies.
+
+Importantly, this means that it's possible to only process the files which have
+changed since MCP Deobfuscate was last run, one project within an environment,
+or a single interesting file.  When building against a large codebase, this can
+be a massive time savings, especially as part of a test->modify->rebuild loop.
