@@ -152,7 +152,7 @@ public class MCPDRemapper extends Remapper {
             ZipFile inzip = new ZipFile(input);
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(output));
 
-            // Iterate through the file in the input zip.
+            // Iterate through the files in the input zip.
             Enumeration<? extends ZipEntry> entries = inzip.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
@@ -195,11 +195,10 @@ public class MCPDRemapper extends Remapper {
         // Set up the ASM prerequisites.
         ClassReader cr = new ClassReader(in);
         ClassWriter cw = new ClassWriter(0);
-        //ClassWriter cw = new ClassWriter(cr, 0);
         RemappingClassAdapter visitor = new RemappingClassAdapter(cw, this);
 
         // Do the actual remapping.
-        cr.accept(visitor, ClassReader.EXPAND_FRAMES);
+        cr.accept(visitor, 0);
 
         // Write out the translated class.
         out.write(cw.toByteArray());
