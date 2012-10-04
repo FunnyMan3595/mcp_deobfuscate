@@ -96,7 +96,16 @@ public class MCPDeobfuscate {
             }
         }
 
-        MCPDRemapper remapper = new MCPDRemapper();
+        MCPDRemapper remapper;
+        try {
+            remapper = new MCPDRemapper(new File(options.config),
+                                        options.exclude);
+        } catch (IOException e) {
+            System.out.println("Unable to read config file.");
+            e.printStackTrace();
+            System.exit(3);
+            return; // Stupid fucking compiler.
+        }
         int errors = 0;
         int successes = 0;
         for (int i=0; i<infiles.size(); i++) {

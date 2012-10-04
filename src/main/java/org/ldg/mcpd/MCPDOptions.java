@@ -8,6 +8,11 @@ public class MCPDOptions {
                description = "print this message")
     public boolean help = false;
 
+    @Parameter(names = {"-c", "--config"},
+               description = "RetroGuard-compatible config file",
+               required = true)
+    public String config;
+
     @Parameter(names = {"-i", "--infiles"},
                description = "input class/jar file(s)",
                variableArity = true)
@@ -38,4 +43,10 @@ public class MCPDOptions {
                              "confirmation prompt.  This is intended for " +
                              "script use only!")
     public boolean unsafe = false;
+
+    @Parameter(names = {"-e", "--exclude"},
+               description = "packages to exclude from translation " + 
+                             "(e.g. libraries)",
+               variableArity=true)
+    public List<String> exclude;
 }
