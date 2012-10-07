@@ -29,39 +29,54 @@ public class MCPDeobfuscate {
             System.exit(0);
         }
 
+        boolean inheritance_only = false;
         if (options.outputs == null && options.outdir == null) {
-            System.out.println("You must specify --outdir or --outfiles.");
-            System.exit(1);
+            inheritance_only = true;
         }
 
-        if (options.outputs != null &&
-            options.outputs.size() != options.inputs.size()) {
-            System.out.println("--infiles and --outfiles must be the same size.");
-        }
+        if (inheritance_only) {
+            if (options.inheritance_file == null) {
+                System.out.println("Nothing to do.");
+                System.out.println("(Did you forget --output, --outdir, or "
+                                   + "--inheritance?)");
+                System.exit(0);
+            }
+        } else {
+            if (options.config == null) {
+                System.out.println("You must specify a --config to translate with.");
+                System.exit(1);
+            }
 
-        if (options.keepdirs && !options.unsafe) {
-            System.err.print(
-"WARNING: Using -k or --keepdirs can result in unexpected behaviour if any input\n" +
-"         files are not contained in --indir (defaults to current directory).\n" +
-"Are you sure you want to continue? (y/N) ");
-            System.err.flush();
+            if (options.outputs != null &&
+                options.outputs.size() != options.inputs.size()) {
+                System.out.println("--infiles and --outfiles must be the same size.");
+            }
 
-            String response = "n";
-            try {
-                InputStreamReader rin = new InputStreamReader(System.in);
-                BufferedReader bin = new BufferedReader(rin);
-                response = bin.readLine().trim();
-            } catch (Exception e) {}
+            if (options.keepdirs && !options.unsafe) {
+                System.err.print(
+    "WARNING: Using -k or --keepdirs can result in unexpected behaviour if any input\n" +
+    "         files are not contained in --indir (defaults to current directory).\n" +
+    "Are you sure you want to continue? (y/N) ");
+                System.err.flush();
 
-            if (!response.equalsIgnoreCase("y")) {
-                System.out.println("Aborting.");
-                System.exit(2);
+                String response = "n";
+                try {
+                    InputStreamReader rin = new InputStreamReader(System.in);
+                    BufferedReader bin = new BufferedReader(rin);
+                    response = bin.readLine().trim();
+                } catch (Exception e) {}
+
+                if (!response.equalsIgnoreCase("y")) {
+                    System.out.println("Aborting.");
+                    System.exit(2);
+                }
             }
         }
 
         List<File> infiles = new ArrayList<File>();
         List<File> outfiles = new ArrayList<File>();
 
+        // Base input file directory.
         File indir;
         if (options.indir == null) {
             indir = new File(".");
@@ -69,6 +84,7 @@ public class MCPDeobfuscate {
             indir = new File(options.indir);
         }
 
+        // Base output file directory.
         File outdir;
         if (options.outdir == null) {
             outdir = new File(".");
@@ -76,25 +92,55 @@ public class MCPDeobfuscate {
             outdir = new File(options.outdir);
         }
 
+        // Collect the input files.
         for (String in : options.inputs) {
             infiles.add(new File(indir, in));
         }
 
+        // Collect the output files.
         if (options.outputs != null) {
+            // With the names given.
             for (String out : options.outputs) {
                 outfiles.add(new File(outdir, out));
             }
         } else {
+            // By using the original names.
             if (options.keepdirs) {
+                // And their directories (can be unsafe)
                 for (String in : options.inputs) {
                     outfiles.add(new File(outdir, in));
                 }
             } else {
+                // Flat in the output directory.
                 for (File infile : infiles) {
                     outfiles.add(new File(outdir, infile.getName()));
                 }
             }
         }
+
+        System.out.println("Calculating inheritance...");
+        File inheritanceFile = null;
+        if (options.inheritance_file != null) {
+            inheritanceFile = new File(options.inheritance_file);
+        }
+        try {
+            MCPDInheritanceVisitor inheritance = new MCPDInheritanceVisitor(inheritanceFile);
+            MCPDFileHandler inheritanceProcessor = new MCPDFileHandler(inheritance);
+            inheritanceProcessor.processFiles(infiles, outfiles);
+            inheritance.done();
+        } catch (IOException e) {
+            System.out.println("Error: Unable to write to inheritance file.");
+            System.exit(2);
+            return; // Stupid fucking compiler.
+        }
+
+        if (inheritance_only) {
+            System.exit(0);
+        }
+
+        System.out.println();
+        System.out.println();
+        System.out.println("Translating...");
 
         MCPDRemapper remapper;
         try {
@@ -106,30 +152,8 @@ public class MCPDeobfuscate {
             System.exit(3);
             return; // Stupid fucking compiler.
         }
-        int errors = 0;
-        int successes = 0;
-        for (int i=0; i<infiles.size(); i++) {
-            try {
-                File infile = infiles.get(i);
-                File outfile = outfiles.get(i);
 
-                System.out.println("Translating from: "
-                                   + infile.getCanonicalPath());
-                System.out.println("              to: "
-                                   + outfile.getCanonicalPath());
-
-                remapper.remap(infile, outfile);
-
-                successes += 1;
-            } catch (Exception e) {
-                System.out.println("Translation failed:");
-                e.printStackTrace(new PrintStream(System.out));
-                errors += 1;
-            }
-        }
-
-        System.out.println("Translation complete: "
-                           + successes + " files successful, "
-                           + errors + " files failed.");
+        MCPDFileHandler remapProcessor = new MCPDFileHandler(remapper);
+        remapProcessor.processFiles(infiles, outfiles);
     }
 }
