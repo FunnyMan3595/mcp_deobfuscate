@@ -1,0 +1,55 @@
+MCP Deobfuscate is a renaming tool suitable for obfuscation and deobfuscation
+of Java class files, and jar/zip bundles thereof.  It was written with the
+Minecraft Coder Pack in mind (hence the name), but should be sufficiently
+general for any use.
+
+MCP Deobfuscate is released under the MIT License, see LICENSE for details.
+
+
+
+COMPILING:
+
+With Maven installed, compiling should be as simple as:
+
+mvn clean package
+
+
+
+DEPENDENCIES:
+
+To run MCP Deobfuscate, you will need the following libraries in the main MCPD
+directory:
+
+* asm-all-3.3.1.jar 
+* jcommander-1.29.jar
+
+
+These files will have been downloaded by Maven, and may be found in the
+following locations for Linux users:
+
+~/.m2/repository/asm/asm-all/3.3.1/asm-all-3.3.1.jar
+~/.m2/repository/com/beust/jcommander/1.29/jcommander-1.29.jar
+
+
+
+RUNNING:
+
+If you have compiled MCPD and placed the dependencies correctly, simply run
+mcpd.sh:
+
+mcpd.sh --help
+
+
+
+PARTIAL CODE BASES:
+
+MCP Deobfuscate can be used on subsets of a code base, e.g. to deobfuscate or
+reobfuscate only the interesting classes.  To ensure accuracy for inherited
+names, you will need to create an inheritance file for the portions that will
+not be included:
+
+mcpd.sh --config deobf.srg --inheritance external.inh --infiles a.jar b.zip c.class
+
+The inheritance file can then be used like so:
+
+mcpd.sh --config deobf.srg --stored_inheritance external.inh another.inh --infiles d.jar e.zip f.class --outdir deobfuscated
