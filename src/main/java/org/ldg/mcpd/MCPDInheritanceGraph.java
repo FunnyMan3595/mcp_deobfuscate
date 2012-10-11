@@ -10,71 +10,46 @@ public class MCPDInheritanceGraph {
         Node childNode = nodes.get(child);
 
         if (parentNode == null) {
-            parentNode = new Node(parent, null);
+            parentNode = new Node(parent);
             nodes.put(parent, parentNode);
         }
 
         if (childNode == null) {
-            childNode = new Node(child, parentNode);
-            parentNode.children.add(childNode);
+            childNode = new Node(child);
             nodes.put(child, childNode);
-        } else {
-            if (childNode.parent == null) {
-                childNode.parent = parentNode;
-                parentNode.children.add(childNode);
-            } else if (childNode.parent != parentNode) {
-                System.out.println("ERROR: Bad inheritance.");
-                System.out.println(childNode.name + " has two superclasses:");
-                System.out.println(childNode.parent.name);
-                System.out.println(parent);
-                throw new RuntimeException("Bad inheritance.");
-            } else {
-                // Nothing to do; inheritance already recorded.
-            }
         }
+
+        parentNode.children.add(childNode);
+        childNode.parents.add(parentNode);
     }
 
     public List<String> getAncestors(String child) {
         List<String> ancestors = new ArrayList<String>();
-        Node current = nodes.get(child);
 
-        if (current == null) {
-            return ancestors;
-        }
+        Node root = nodes.get(child);
 
-        while (current.parent != null) {
-            ancestors.add(current.parent.name);
-            current = current.parent;
+        if (root != null) {
+            root.addAncestors(ancestors);
         }
 
         return ancestors;
     }
 
-    public void print() {
-        Node object = nodes.get("java/lang/Object");
-        if (object == null) {
-            System.out.println("No root node.");
-        } else {
-            object.print("");
-        }
-    }
-
     private class Node {
         public String name;
-        public Node parent;
+        public Set<Node> parents = new HashSet<Node>();
         public Set<Node> children = new HashSet<Node>();
 
-        public Node(String name, Node parent) {
+        public Node(String name) {
             this.name = name;
-            this.parent = parent;
         }
 
-        public void print(String prefix) {
-            System.out.println(prefix + name);
-            prefix += "  ";
-
-            for (Node child : children) {
-                child.print(prefix);
+        public void addAncestors(List<String> ancestors) {
+            for (Node parent : parents) {
+                if (!ancestors.contains(parent)) {
+                    ancestors.add(parent.name);
+                    parent.addAncestors(ancestors);
+                }
             }
         }
     }

@@ -123,8 +123,17 @@ public class MCPDeobfuscate {
         if (options.inheritance_file != null) {
             inheritanceFile = new File(options.inheritance_file);
         }
+
+        List<File> libraryFiles = new ArrayList<File>();
+        if (options.library_files != null) {
+            for (String library : options.library_files) {
+                libraryFiles.add(new File(library));
+            }
+        }
+
+        MCPDInheritanceVisitor inheritance;
         try {
-            MCPDInheritanceVisitor inheritance = new MCPDInheritanceVisitor(inheritanceFile);
+            inheritance = new MCPDInheritanceVisitor(inheritanceFile, libraryFiles);
             MCPDFileHandler inheritanceProcessor = new MCPDFileHandler(inheritance);
             inheritanceProcessor.processFiles(infiles, outfiles);
             inheritance.done();
@@ -145,7 +154,7 @@ public class MCPDeobfuscate {
         MCPDRemapper remapper;
         try {
             remapper = new MCPDRemapper(new File(options.config),
-                                        options.exclude);
+                                        options.exclude, inheritance.graph);
         } catch (IOException e) {
             System.out.println("Unable to read config file.");
             e.printStackTrace();

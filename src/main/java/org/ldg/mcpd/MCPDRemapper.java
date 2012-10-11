@@ -7,14 +7,16 @@ import java.util.*;
 
 public class MCPDRemapper extends Remapper implements MCPDClassHandler {
     List<String> exemptions;
+    MCPDInheritanceGraph inheritance;
     String default_package = null;
     Map<String, String> packages = new HashMap<String, String>();
     Map<String, String> classes = new HashMap<String, String>();
     Map<String, String> fields = new HashMap<String, String>();
     Map<String, String> methods = new HashMap<String, String>();
 
-    public MCPDRemapper(File configfile, List<String> exclude) throws IOException {
+    public MCPDRemapper(File configfile, List<String> exclude, MCPDInheritanceGraph inheritanceGraph) throws IOException {
         exemptions = exclude;
+        inheritance = inheritanceGraph;
 
         FileInputStream fis = new FileInputStream(configfile);
         InputStreamReader isr = new InputStreamReader(fis);
@@ -101,17 +103,35 @@ public class MCPDRemapper extends Remapper implements MCPDClassHandler {
     }
 
     public String mapFieldName(String cls, String name, String descriptor) {
+        // Check the class itself first.
         String key = cls + "/" + name;
         if (fields.containsKey(key)) {
             return fields.get(key);
+        }
+
+        // Then all of its ancestors
+        for (String ancestor : inheritance.getAncestors(cls)) {
+            key = ancestor + "/" + name;
+            if (fields.containsKey(key)) {
+                return fields.get(key);
+            }
         }
         return name;
     }
 
     public String mapMethodName(String cls, String name, String descriptor) {
+        // Check the class itself first.
         String key = cls + "/" + name + ";" + descriptor;
         if (methods.containsKey(key)) {
             return methods.get(key);
+        }
+
+        // Then all of its ancestors
+        for (String ancestor : inheritance.getAncestors(cls)) {
+            key = ancestor + "/" + name + ";" + descriptor;
+            if (methods.containsKey(key)) {
+                return methods.get(key);
+            }
         }
         return name;
     }
@@ -163,7 +183,7 @@ public class MCPDRemapper extends Remapper implements MCPDClassHandler {
         RemappingClassAdapter visitor = new RemappingClassAdapter(cw, this);
 
         // Do the actual remapping.
-        cr.accept(visitor, 0);
+        cr.accept(visitor, cr.EXPAND_FRAMES);
 
         // Write out the translated class.
         out.write(cw.toByteArray());

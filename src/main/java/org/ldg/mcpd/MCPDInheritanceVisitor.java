@@ -1,19 +1,38 @@
 package org.ldg.mcpd;
 
 import org.objectweb.asm.*;
+import java.util.*;
 import java.io.*;
 
 public class MCPDInheritanceVisitor implements ClassVisitor, MCPDClassHandler {
     private PrintWriter out = null;
     public MCPDInheritanceGraph graph;
 
-    public MCPDInheritanceVisitor(File output) throws IOException {
+    public MCPDInheritanceVisitor(File output, List<File> caches) throws IOException {
         if (output != null) {
             FileOutputStream fos = new FileOutputStream(output);
             out = new PrintWriter(fos);
         }
 
         graph = new MCPDInheritanceGraph();
+
+        for (File cache : caches) {
+            BufferedReader contents = new BufferedReader(new InputStreamReader(new FileInputStream(cache)));
+
+            String line = contents.readLine();
+            while (line != null) {
+                String parts[] = line.split(";");
+                if (parts.length != 2) {
+                    System.out.println("Bad stored inheritance: " + line);
+                } else {
+                    String parent = parts[0];
+                    String child = parts[1];
+                    graph.addRelationship(parent, child);
+                }
+
+                line = contents.readLine();
+            }
+        }
     }
 
     public void recordRelationship(String parent, String child) {
@@ -25,12 +44,18 @@ public class MCPDInheritanceVisitor implements ClassVisitor, MCPDClassHandler {
     }
 
     public void done() throws IOException {
-        out.close();
+        if (out != null) {
+            out.close();
+        }
     }
 
     public void visit(int version, int access, String name, String signature,
                       String superName, String[] interfaces) {
         recordRelationship(superName, name);
+
+        for (String iface : interfaces) {
+            recordRelationship(iface, name);
+        }
     }
 
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
