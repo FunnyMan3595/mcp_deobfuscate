@@ -16,6 +16,9 @@ public class MCPDRemapper extends Remapper implements MCPDClassHandler {
 
     public MCPDRemapper(File configfile, List<String> exclude, MCPDInheritanceGraph inheritanceGraph) throws IOException {
         exemptions = exclude;
+        if (exemptions == null) {
+            exemptions = new ArrayList<String>();
+        }
         inheritance = inheritanceGraph;
 
         FileInputStream fis = new FileInputStream(configfile);
@@ -94,8 +97,12 @@ public class MCPDRemapper extends Remapper implements MCPDClassHandler {
             }
 
             if (best_match.length() > 0) {
-                return packages.get(best_match)
-                       + name.substring(best_match.length());
+                String mapping = packages.get(best_match);
+                if (mapping.equals(".")) {
+                    return name.substring(best_match.length() + 1);
+                } else {
+                    return mapping + name.substring(best_match.length());
+                }
             }
         }
 
