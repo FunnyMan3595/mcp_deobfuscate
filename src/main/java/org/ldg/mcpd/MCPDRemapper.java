@@ -14,7 +14,7 @@ public class MCPDRemapper extends Remapper implements MCPDClassHandler {
     Map<String, String> fields = new HashMap<String, String>();
     Map<String, String> methods = new HashMap<String, String>();
 
-    public MCPDRemapper(File configfile, List<String> exclude, MCPDInheritanceGraph inheritanceGraph) throws IOException {
+    public MCPDRemapper(File configfile, List<String> exclude, MCPDInheritanceGraph inheritanceGraph, boolean invert) throws IOException {
         exemptions = exclude;
         if (exemptions == null) {
             exemptions = new ArrayList<String>();
@@ -36,6 +36,10 @@ public class MCPDRemapper extends Remapper implements MCPDClassHandler {
 
                 String sourcePackage = pieces[1];
                 String destPackage = pieces[2];
+                if (invert) {
+                    sourcePackage = pieces[2];
+                    destPackage = pieces[1];
+                }
 
                 if (sourcePackage.equals(".")) {
                     default_package = destPackage;
@@ -49,6 +53,10 @@ public class MCPDRemapper extends Remapper implements MCPDClassHandler {
 
                 String sourceClass = pieces[1];
                 String destClass = pieces[2];
+                if (invert) {
+                    sourceClass = pieces[2];
+                    destClass = pieces[1];
+                }
 
                 classes.put(sourceClass, destClass);
             } else if (pieces[0].equals("FD:")) {
@@ -60,6 +68,12 @@ public class MCPDRemapper extends Remapper implements MCPDClassHandler {
 
                 // Trim off the class name.
                 String[] subpieces = pieces[2].split("/");
+
+                if (invert) {
+                    sourceField = pieces[2];
+                    subpieces = pieces[1].split("/");
+                }
+
                 String destField = subpieces[subpieces.length - 1];
 
                 fields.put(sourceField, destField);
@@ -73,6 +87,13 @@ public class MCPDRemapper extends Remapper implements MCPDClassHandler {
 
                 // Trim off the class name.
                 String[] subpieces = pieces[3].split("/");
+
+                if (invert) {
+                    sourceMethod = pieces[3];
+                    sourceSignature = pieces[4];
+                    subpieces = pieces[1].split("/");
+                }
+
                 String destMethod = subpieces[subpieces.length - 1];
 
                 methods.put(sourceMethod + ";" + sourceSignature, destMethod);

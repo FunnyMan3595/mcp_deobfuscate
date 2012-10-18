@@ -12,6 +12,10 @@ public class MCPDOptions {
                description = "RetroGuard-compatible config file")
     public String config;
 
+    @Parameter(names = {"-I", "--invert"},
+               description = "Invert obfuscation table (from --config)")
+    public boolean invert = false;
+
     @Parameter(names = {"-i", "--infiles"},
                description = "input class/jar file(s)",
                variableArity = true)

@@ -148,13 +148,13 @@ public class MCPDeobfuscate {
         }
 
         System.out.println();
-        System.out.println();
         System.out.println("Translating...");
 
         MCPDRemapper remapper;
         try {
             remapper = new MCPDRemapper(new File(options.config),
-                                        options.exclude, inheritance.graph);
+                                        options.exclude, inheritance.graph,
+                                        options.invert);
         } catch (IOException e) {
             System.out.println("Unable to read config file.");
             e.printStackTrace();
