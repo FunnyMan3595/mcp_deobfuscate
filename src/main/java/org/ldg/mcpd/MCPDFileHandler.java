@@ -11,7 +11,7 @@ public class MCPDFileHandler {
         handler = classHandler;
     }
 
-    public void processFiles(List<File> inputs, List<File> outputs) {
+    public int processFiles(List<File> inputs, List<File> outputs) {
         assert(inputs.size() == outputs.size());
 
         int errors = 0;
@@ -37,6 +37,8 @@ public class MCPDFileHandler {
         System.out.println("Processing complete: "
                            + successes + " files successful, "
                            + errors + " files failed.");
+
+        return errors;
     }
 
     public void processFile(File input, File output) throws IOException {

@@ -15,7 +15,7 @@ public class MCPDeobfuscate {
             jc.setProgramName("mcpd");
         } catch (com.beust.jcommander.ParameterException e) {
             System.out.println(e.getMessage());
-            System.exit(1);
+            System.exit(-1);
             return; // Stupid fucking compiler.
         }
 
@@ -44,7 +44,7 @@ public class MCPDeobfuscate {
         } else {
             if (options.config == null) {
                 System.out.println("You must specify a --config to translate with.");
-                System.exit(1);
+                System.exit(-1);
             }
 
             if (options.outputs != null &&
@@ -118,6 +118,8 @@ public class MCPDeobfuscate {
             }
         }
 
+        int failures = 0;
+
         System.out.println("Calculating inheritance...");
         File inheritanceFile = null;
         if (options.inheritance_file != null) {
@@ -135,11 +137,11 @@ public class MCPDeobfuscate {
         try {
             inheritance = new MCPDInheritanceVisitor(inheritanceFile, libraryFiles);
             MCPDFileHandler inheritanceProcessor = new MCPDFileHandler(inheritance);
-            inheritanceProcessor.processFiles(infiles, outfiles);
+            failures += inheritanceProcessor.processFiles(infiles, outfiles);
             inheritance.done();
         } catch (IOException e) {
             System.out.println("Error: Unable to write to inheritance file.");
-            System.exit(2);
+            System.exit(-2);
             return; // Stupid fucking compiler.
         }
 
@@ -158,11 +160,13 @@ public class MCPDeobfuscate {
         } catch (IOException e) {
             System.out.println("Unable to read config file.");
             e.printStackTrace();
-            System.exit(3);
+            System.exit(-3);
             return; // Stupid fucking compiler.
         }
 
         MCPDFileHandler remapProcessor = new MCPDFileHandler(remapper);
-        remapProcessor.processFiles(infiles, outfiles);
+        failures += remapProcessor.processFiles(infiles, outfiles);
+
+        System.exit(failures);
     }
 }
