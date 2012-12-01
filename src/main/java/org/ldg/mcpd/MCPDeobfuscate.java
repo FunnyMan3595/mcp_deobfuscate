@@ -6,7 +6,7 @@ import java.util.*;
 
 public class MCPDeobfuscate {
     public static void main(String args[]) {
-        MCPDOptions options = new MCPDOptions();
+        Options options = new Options();
 
         JCommander jc;
 
@@ -133,10 +133,10 @@ public class MCPDeobfuscate {
             }
         }
 
-        MCPDInheritanceVisitor inheritance;
+        InheritanceVisitor inheritance;
         try {
-            inheritance = new MCPDInheritanceVisitor(inheritanceFile, libraryFiles);
-            MCPDFileHandler inheritanceProcessor = new MCPDFileHandler(inheritance);
+            inheritance = new InheritanceVisitor(inheritanceFile, libraryFiles);
+            FileHandler inheritanceProcessor = new FileHandler(inheritance);
             failures += inheritanceProcessor.processFiles(infiles, outfiles);
             inheritance.done();
         } catch (IOException e) {
@@ -152,9 +152,9 @@ public class MCPDeobfuscate {
         System.out.println();
         System.out.println("Translating...");
 
-        MCPDRemapper remapper;
+        Remapper remapper;
         try {
-            remapper = new MCPDRemapper(new File(options.config),
+            remapper = new Remapper(new File(options.config),
                                         options.exclude, inheritance.graph,
                                         options.invert);
         } catch (IOException e) {
@@ -164,7 +164,7 @@ public class MCPDeobfuscate {
             return; // Stupid fucking compiler.
         }
 
-        MCPDFileHandler remapProcessor = new MCPDFileHandler(remapper);
+        FileHandler remapProcessor = new FileHandler(remapper);
         failures += remapProcessor.processFiles(infiles, outfiles);
 
         System.exit(failures);

@@ -4,17 +4,17 @@ import org.objectweb.asm.*;
 import java.util.*;
 import java.io.*;
 
-public class MCPDInheritanceVisitor implements ClassVisitor, MCPDClassHandler {
+public class InheritanceVisitor implements ClassVisitor, ClassHandler {
     private PrintWriter out = null;
-    public MCPDInheritanceGraph graph;
+    public InheritanceGraph graph;
 
-    public MCPDInheritanceVisitor(File output, List<File> caches) throws IOException {
+    public InheritanceVisitor(File output, List<File> caches) throws IOException {
         if (output != null) {
             FileOutputStream fos = new FileOutputStream(output);
             out = new PrintWriter(fos);
         }
 
-        graph = new MCPDInheritanceGraph();
+        graph = new InheritanceGraph();
 
         for (File cache : caches) {
             BufferedReader contents = new BufferedReader(new InputStreamReader(new FileInputStream(cache)));

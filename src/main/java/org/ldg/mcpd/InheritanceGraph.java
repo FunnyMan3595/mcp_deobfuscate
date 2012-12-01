@@ -2,7 +2,7 @@ package org.ldg.mcpd;
 
 import java.util.*;
 
-public class MCPDInheritanceGraph {
+public class InheritanceGraph {
     private Map<String, Node> nodes = new HashMap<String, Node>();
 
     public void addRelationship(String parent, String child) {

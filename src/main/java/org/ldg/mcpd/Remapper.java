@@ -5,16 +5,16 @@ import org.objectweb.asm.commons.*;
 import java.io.*;
 import java.util.*;
 
-public class MCPDRemapper extends Remapper implements MCPDClassHandler {
+public class Remapper extends org.objectweb.asm.commons.Remapper implements ClassHandler {
     List<String> exemptions;
-    MCPDInheritanceGraph inheritance;
+    InheritanceGraph inheritance;
     String default_package = null;
     Map<String, String> packages = new HashMap<String, String>();
     Map<String, String> classes = new HashMap<String, String>();
     Map<String, String> fields = new HashMap<String, String>();
     Map<String, String> methods = new HashMap<String, String>();
 
-    public MCPDRemapper(File configfile, List<String> exclude, MCPDInheritanceGraph inheritanceGraph, boolean invert) throws IOException {
+    public Remapper(File configfile, List<String> exclude, InheritanceGraph inheritanceGraph, boolean invert) throws IOException {
         exemptions = exclude;
         if (exemptions == null) {
             exemptions = new ArrayList<String>();

@@ -3,7 +3,7 @@ package org.ldg.mcpd;
 import com.beust.jcommander.Parameter;
 import java.util.List;
 
-public class MCPDOptions {
+public class Options {
     @Parameter(names = {"-h", "--help"}, help=true, hidden=true,
                description = "print this message")
     public boolean help = false;

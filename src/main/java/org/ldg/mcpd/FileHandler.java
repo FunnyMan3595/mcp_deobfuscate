@@ -4,10 +4,10 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.*;
 
-public class MCPDFileHandler {
-    public MCPDClassHandler handler;
+public class FileHandler {
+    public ClassHandler handler;
 
-    public MCPDFileHandler(MCPDClassHandler classHandler) {
+    public FileHandler(ClassHandler classHandler) {
         handler = classHandler;
     }
 
