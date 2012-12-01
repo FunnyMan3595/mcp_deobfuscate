@@ -4,11 +4,13 @@ import org.objectweb.asm.*;
 import java.util.*;
 import java.io.*;
 
-public class InheritanceVisitor implements ClassVisitor, ClassHandler {
+public class InheritanceVisitor extends ClassVisitor implements ClassHandler {
     private PrintWriter out = null;
     public InheritanceGraph graph;
 
     public InheritanceVisitor(File output, List<File> caches) throws IOException {
+        super(Opcodes.ASM4);
+
         if (output != null) {
             FileOutputStream fos = new FileOutputStream(output);
             out = new PrintWriter(fos);

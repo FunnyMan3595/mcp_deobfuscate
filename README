@@ -20,14 +20,14 @@ DEPENDENCIES:
 To run MCP Deobfuscate, you will need the following libraries in the main MCPD
 directory:
 
-* asm-all-3.3.1.jar 
+* asm-all-4.0.jar 
 * jcommander-1.29.jar
 
 
 These files will have been downloaded by Maven, and may be found in the
 following locations for Linux users:
 
-~/.m2/repository/asm/asm-all/3.3.1/asm-all-3.3.1.jar
+~/.m2/repository/org/ow2/asm/asm-all/4.0/asm-all-4.0.jar
 ~/.m2/repository/com/beust/jcommander/1.29/jcommander-1.29.jar
 
 
