@@ -27,6 +27,7 @@ public class Remapper extends org.objectweb.asm.commons.Remapper implements Clas
 
         String line = config.readLine();
         while (line != null) {
+            line = line.split("#")[0];
             String[] pieces = line.trim().split(" ");
 
             if (pieces[0].equals("PK:")) {
