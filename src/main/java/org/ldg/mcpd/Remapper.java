@@ -211,7 +211,7 @@ public class Remapper extends org.objectweb.asm.commons.Remapper implements Clas
         RemappingClassAdapter visitor = new RemappingClassAdapter(cw, this);
 
         // Do the actual remapping.
-        cr.accept(visitor, cr.EXPAND_FRAMES);
+        cr.accept(visitor, cr.SKIP_FRAMES);
 
         // Write out the translated class.
         out.write(cw.toByteArray());
