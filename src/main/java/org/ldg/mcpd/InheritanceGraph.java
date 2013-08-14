@@ -23,7 +23,7 @@ public class InheritanceGraph {
         childNode.parents.add(parentNode);
     }
 
-    public List<String> getAncestors(String child) {
+    public List<String> getAncestors(final String child) {
         List<String> ancestors = new ArrayList<String>();
 
         Node root = nodes.get(child);
@@ -33,6 +33,37 @@ public class InheritanceGraph {
         }
 
         return ancestors;
+    }
+
+    public String getCommonAncestor(final String child1, final String child2) {
+        Set<String> ancestors1 = new HashSet<String>(getAncestors(child1));
+
+        if (ancestors1.contains(child2)) {
+            return child2;
+        }
+
+        Set<Node> ancestors2 = new HashSet<Node>();
+        ancestors2.add(nodes.get(child2));
+
+        while (!ancestors2.isEmpty())
+        {
+            Set<Node> next_ancestors = new HashSet<Node>();
+            for (Node ancestor : ancestors2) {
+                if (ancestor == null) {
+                    continue;
+                }
+
+                if (ancestors1.contains(ancestor.name)) {
+                    return ancestor.name;
+                }
+
+                next_ancestors.addAll(ancestor.parents);
+            }
+
+            ancestors2 = next_ancestors;
+        }
+
+        return "java/lang/String";
     }
 
     private class Node {

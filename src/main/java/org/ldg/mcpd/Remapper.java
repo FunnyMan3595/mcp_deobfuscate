@@ -207,7 +207,7 @@ public class Remapper extends org.objectweb.asm.commons.Remapper implements Clas
     public void handleClass(InputStream in, OutputStream out) throws IOException {
         // Set up the ASM prerequisites.
         ClassReader cr = new ClassReader(in);
-        ClassWriter cw = new ClassWriter(0);
+        NonloadingClassWriter cw = new NonloadingClassWriter(inheritance);
         RemappingClassAdapter visitor = new RemappingClassAdapter(cw, this);
 
         // Do the actual remapping.
